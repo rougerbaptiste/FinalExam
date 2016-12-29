@@ -2,11 +2,11 @@ function msd= compute_msd(m,tspan,x0,pe, pe_nom,circuit,EorA, theta, eta)
 
 %circuit: 1, 2, or 3 corresponds to R, I or RI
 %EorA: 1 or 2 corresponds to E or A
-for thet=1:length(theta)
-    for et=1:length(eta)
+%for thet=1:length(theta)
+ %   for et=1:length(eta)
         for i=1:length(m)
-            pe([8 9 10]) = [m(i) theta(thet) eta(et)]; %update pe
-            pe_nom([8 9 10]) = [m(i) theta(thet) eta(et)]; %update pe_nom
+            pe(8) = m(i); %update pe
+            pe_nom(8) = m(i); %update pe_nom
             if circuit==1
                 [t x_nom]= ode15s(@you_odeR,tspan, x0, [], pe_nom); %compute nominal behavior of circuit R
                 [t x]= ode15s(@you_odeR,tspan, x0, [], pe); %compute behavior of circuit R for specific values of theta and eta, stored in pe
@@ -26,7 +26,7 @@ for thet=1:length(theta)
                 output(i)= x(end,3);
             end
         end
-        msd(thet, et)= sqrt( (sum( (output - output_nom).^2))/length(output) ); %here is the square root of the sum of squared differences between the output and the nominal output, divided by the number of values
-    end
-end
+        msd= sqrt( (sum( (output - output_nom).^2))/length(output) ); %here is the square root of the sum of squared differences between the output and the nominal output, divided by the number of values
+%    end
+%end
 end

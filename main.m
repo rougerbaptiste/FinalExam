@@ -17,7 +17,7 @@ x0= [100 0 0];
 tspan= [0:1:60];
 
 %In order to avoid doing always the same computations, you can set several Q to 0...
-Q1=0; Q2=0; Q3=0; Q4=0; Q5=0; Q6_7=1; Q8=0; Q9=0; Q10=0;
+Q1=0; Q2=0; Q3=0; Q4=0; Q5=0; Q6_7=1; Q8=1; Q9=0; Q10=0;
 
 % Computes ON and OFF behaviors of engineered system; plot on same figure
 % %
@@ -125,78 +125,78 @@ if Q6_7
     %msd(4) stores the msd for A in model I
     %msd(5) stores the msd for E in model RI
     %msd(6) stores the msd for A in model RI
-    theta = 0.4:0.2:1.6;
-    eta = 1.8:0.2:2.4;
-    msd1= compute_msd(m,tspan,x0,pe,pe_ref,1,1, theta, eta);
-    msd2= compute_msd(m,tspan,x0,pe,pe_ref,1,2, theta, eta);
-    msd3= compute_msd(m,tspan,x0,pe,pe_ref,2,1, theta, eta);
-    msd4= compute_msd(m,tspan,x0,pe,pe_ref,2,2, theta, eta);
-    msd5= compute_msd(m,tspan,x0,pe,pe_ref,3,1, theta, eta);
-    msd6= compute_msd(m,tspan,x0,pe,pe_ref,3,2, theta, eta);
-    %display(['msd: ' num2str(msd)]);
-    display(['msd : ' msd1 msd2 msd3 msd4 msd5 msd6]);
+    theta = 0.4;
+    eta = 2.4;
+    msd(1)= compute_msd(m,tspan,x0,pe,pe_ref,1,1);
+    msd(2)= compute_msd(m,tspan,x0,pe,pe_ref,1,2);
+    msd(3)= compute_msd(m,tspan,x0,pe,pe_ref,2,1);
+    msd(4)= compute_msd(m,tspan,x0,pe,pe_ref,2,2);
+    msd(5)= compute_msd(m,tspan,x0,pe,pe_ref,3,1);
+    msd(6)= compute_msd(m,tspan,x0,pe,pe_ref,3,2);
+    display(['msd: ' num2str(msd)]);
+    %display(['msd : ' msd1 msd2 msd3 msd4 msd5 msd6]);
 end
 
-% if Q8
-%     display('--------------Question 8--------------');
-%     theta= [0.4 0.6 0.8 1 1.2 1.4 1.6];
-%     eta= [1.8 2 2.2 2.4];
-%     %theta= [0.4 1 1.6]; % again for debugging, you can use these values instead
-%     %eta= [1.6 2 2.4];
-%     msd= zeros(length(theta),length(eta));
-%     for i= 1:length(theta)
-%         for j= 1:length(eta)
-%             pe= pe_ref;
-%             pe([9 10])= [.. ..];
-%             ..% here store in msd(i,j) the mean square deviation between the nominal IO behavior and the one one obtains with specific values of theta and eta, if the model is youR, and the observed variable is E
-%             %use compute_msd and pe
-%         end
-%     end
-%     variance_IO(1)= var(msd(:));
-%     for i= 1:length(theta)
-%         for j= 1:length(eta)
-%             pe= pe_ref;
-%             pe([9 10])= [.. ..];
-%             .. % the same as above, but if the model is youR and the observed variable is A
-%         end
-%     end
-%     variance_IO(2)= var(msd(:));
-%     for i= 1:length(theta)
-%         for j= 1:length(eta)
-%             pe= pe_ref;
-%             pe([9 10])= [.. ..];
-%             .. % the same as above, but if the model is youI and the observed variable is E
-%         end
-%     end
-%     variance_IO(3)= var(msd(:));
-%     for i= 1:length(theta)
-%         for j= 1:length(eta)
-%             pe= pe_ref;
-%             pe([9 10])= [.. ..];
-%             .. % the same as above, but if the model is youI and the observed variable is A
-%         end
-%     end
-%     variance_IO(4)= var(msd(:));
-%     for i= 1:length(theta)
-%         for j= 1:length(eta)
-%             pe= pe_ref;
-%             pe([9 10])= [.. ..];
-%             .. % the same as above, but if the model is youRI and the observed variable is E
-%         end
-%     end
-%     variance_IO(5)= var(msd(:));
-%     for i= 1:length(theta)
-%         for j= 1:length(eta)
-%             pe= pe_ref;
-%             pe([9 10])= [.. ..];
-%             .. % the same as above, but if the model is youRI and the observed variable is A
-%         end
-%     end
-%     variance_IO(6)= var(msd(:));
-%     display(['variance: ' num2str(variance_IO)]); 
-%     % make you choice here!
-% end
-% 
+if Q8
+    display('--------------Question 8--------------');
+    %theta= [0.4 0.6 0.8 1 1.2 1.4 1.6];
+    %eta= [1.8 2 2.2 2.4];
+    theta= [0.4 1 1.6]; % again for debugging, you can use these values instead
+    eta= [1.6 2 2.4];
+    msd= zeros(length(theta),length(eta));
+    for i= 1:length(theta)
+        for j= 1:length(eta)
+            pe= pe_ref;
+            pe([9 10])= [theta(i) eta(j)];
+            msd(i,j)= compute_msd(m,tspan,x0,pe,pe_ref,1,1); % here store in msd(i,j) the mean square deviation between the nominal IO behavior and the one one obtains with specific values of theta and eta, if the model is youR, and the observed variable is E
+            %use compute_msd and pe
+        end
+    end
+    variance_IO(1)= var(msd(:));
+    for i= 1:length(theta)
+        for j= 1:length(eta)
+            pe= pe_ref;
+            pe([9 10])= [theta(i) eta(j)];
+            compute_msd(m,tspan,x0,pe,pe_ref,1,2); % the same as above, but if the model is youR and the observed variable is A
+        end
+    end
+    variance_IO(2)= var(msd(:));
+    for i= 1:length(theta)
+        for j= 1:length(eta)
+            pe= pe_ref;
+            pe([9 10])= [theta(i) eta(j)];
+            compute_msd(m,tspan,x0,pe,pe_ref,2,1); % the same as above, but if the model is youI and the observed variable is E
+        end
+    end
+    variance_IO(3)= var(msd(:));
+    for i= 1:length(theta)
+        for j= 1:length(eta)
+            pe= pe_ref;
+            pe([9 10])= [theta(i) eta(j)];
+            compute_msd(m,tspan,x0,pe,pe_ref,2,2); % the same as above, but if the model is youI and the observed variable is A
+        end
+    end
+    variance_IO(4)= var(msd(:));
+    for i= 1:length(theta)
+        for j= 1:length(eta)
+            pe= pe_ref;
+            pe([9 10])= [theta(i) eta(j)];
+            compute_msd(m,tspan,x0,pe,pe_ref,3,1); % the same as above, but if the model is youRI and the observed variable is E
+        end
+    end
+    variance_IO(5)= var(msd(:));
+    for i= 1:length(theta)
+        for j= 1:length(eta)
+            pe= pe_ref;
+            pe([9 10])= [theta(i) eta(j)];
+            compute_msd(m,tspan,x0,pe,pe_ref,3,2); % the same as above, but if the model is youRI and the observed variable is A
+        end
+    end
+    variance_IO(6)= var(msd(:));
+    display(['variance: ' num2str(variance_IO)]); 
+    % make you choice here!
+end
+
 % % experimental data should be stored in data.mat file. This file must be in the same folder as your main file
 % if Q9
 %     load('data.mat','data');
