@@ -9,7 +9,7 @@ x_names= {'N','E','A'}; % N is in CFU
 p_names= {'k','Nm','d','ke','de','va','da'};
 
 %define reference parameter values (from paper)
-p_ref([3 4 5 6])= [4e-03 5 2 4e-07]; %set values for d, ke, de, and va
+p_ref([3 4 5 6])= [4e-03 5 2 4.8e-07]; %set values for d, ke, de, and va
 p_ref([1 2 7])= [0.970 1.24e09 0.639];% set values for k, Nm and da at pH 7
 
 %define initial condifions and simulation time (somewhat arbitrary)
@@ -17,7 +17,7 @@ x0= [100 0 0];
 tspan= [0:1:60];
 
 %In order to avoid doing always the same computations, you can set several Q to 0...
-Q1=0; Q2=0; Q3=0; Q4=0; Q5=0; Q6_7=1; Q8=1; Q9=0; Q10=0;
+Q1=1 ; Q2=1; Q3=1; Q4=1; Q5=1; Q6_7=1; Q8=1; Q9=0; Q10=0;
 
 % Computes ON and OFF behaviors of engineered system; plot on same figure
 % %
@@ -27,7 +27,7 @@ if Q1
     p= p_ref;
     [t x_on]= ode15s(@you_ode,tspan, x0, [], p);
     %set parameters p for the OFF system and do numerical simulation
-    p([4 6]) = [0 0] %define p
+    p([4 6]) = [0 0]; %define p
     [t x_off]= ode15s(@you_ode,tspan, x0, [], p);
     figure(1)
     subplot(2,1,1); plot(t,x_on(:,1)/p_ref(2)); legend('N/Nm'); hold on 
@@ -45,11 +45,11 @@ p_pH78= [0.936 1.20e09 4e-03 5 2 4e-07 1.19];% same at pH 7.8
 if Q2
     display('--------------Question 2--------------');
     %compute cell density at steady state for pH6.2; stored in Nmin
-    p = p_pH62 %define p
+    p = p_pH62; %define p
     [t x]= ode15s(@you_ode,tspan, x0, [], p);
     Nmin= x(end,1) %define Nmin using x
     %compute cell density at steady state for pH7.8; stored in Nmax
-    p = p_pH78 %define p
+    p = p_pH78; %define p
     [t x]= ode15s(@you_ode,tspan, x0, [], p);
     Nmax= x(end,1) %define Nmax using x
     %define and display the fold change associated to pH variations
@@ -144,6 +144,7 @@ if Q8
     theta= [0.4 1 1.6]; % again for debugging, you can use these values instead
     eta= [1.6 2 2.4];
     msd= zeros(length(theta),length(eta));
+    
     for i= 1:length(theta)
         for j= 1:length(eta)
             pe= pe_ref;
@@ -153,52 +154,61 @@ if Q8
         end
     end
     variance_IO(1)= var(msd(:));
+
     for i= 1:length(theta)
         for j= 1:length(eta)
             pe= pe_ref;
             pe([9 10])= [theta(i) eta(j)];
-            compute_msd(m,tspan,x0,pe,pe_ref,1,2); % the same as above, but if the model is youR and the observed variable is A
+            msd(i,j)= compute_msd(m,tspan,x0,pe,pe_ref,1,2); % the same as above, but if the model is youR and the observed variable is A
         end
     end
     variance_IO(2)= var(msd(:));
+    
     for i= 1:length(theta)
         for j= 1:length(eta)
             pe= pe_ref;
             pe([9 10])= [theta(i) eta(j)];
-            compute_msd(m,tspan,x0,pe,pe_ref,2,1); % the same as above, but if the model is youI and the observed variable is E
+            msd(i,j)= compute_msd(m,tspan,x0,pe,pe_ref,2,1); % the same as above, but if the model is youI and the observed variable is E
         end
     end
     variance_IO(3)= var(msd(:));
+    
     for i= 1:length(theta)
         for j= 1:length(eta)
             pe= pe_ref;
             pe([9 10])= [theta(i) eta(j)];
-            compute_msd(m,tspan,x0,pe,pe_ref,2,2); % the same as above, but if the model is youI and the observed variable is A
+            msd(i,j)= compute_msd(m,tspan,x0,pe,pe_ref,2,2); % the same as above, but if the model is youI and the observed variable is A
         end
     end
     variance_IO(4)= var(msd(:));
+    
     for i= 1:length(theta)
         for j= 1:length(eta)
             pe= pe_ref;
             pe([9 10])= [theta(i) eta(j)];
-            compute_msd(m,tspan,x0,pe,pe_ref,3,1); % the same as above, but if the model is youRI and the observed variable is E
+            msd(i,j)= compute_msd(m,tspan,x0,pe,pe_ref,3,1); % the same as above, but if the model is youRI and the observed variable is E
         end
     end
     variance_IO(5)= var(msd(:));
+    
     for i= 1:length(theta)
         for j= 1:length(eta)
             pe= pe_ref;
             pe([9 10])= [theta(i) eta(j)];
-            compute_msd(m,tspan,x0,pe,pe_ref,3,2); % the same as above, but if the model is youRI and the observed variable is A
+            msd(i,j)= compute_msd(m,tspan,x0,pe,pe_ref,3,2); % the same as above, but if the model is youRI and the observed variable is A
         end
     end
     variance_IO(6)= var(msd(:));
+    
     display(['variance: ' num2str(variance_IO)]); 
     % make you choice here!
 end
 
 % % experimental data should be stored in data.mat file. This file must be in the same folder as your main file
 % if Q9
+
+
+
 %     load('data.mat','data');
 %     figure(8)
 %     plot(..,..,'x'); legend('E or A'); hold on  %here, plot the experimental data 
