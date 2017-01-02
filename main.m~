@@ -17,7 +17,7 @@ x0= [100 0 0];
 tspan= [0:1:60];
 
 %In order to avoid doing always the same computations, you can set several Q to 0...
-Q1=0; Q2=0; Q3=0; Q4=0; Q5=0; Q6_7=0; Q8=0; Q9=0; Q10=1;
+Q1=1; Q2=1; Q3=1; Q4=1; Q5=1; Q6_7=1; Q8=1; Q9=1; Q10=0;
 
 % Computes ON and OFF behaviors of engineered system; plot on same figure
 % %
@@ -230,42 +230,29 @@ if Q9
     save('k_opt.mat','k_opt'); %save these values to avoid computing them each time
 end
 
-if Q10
-    load('k_opt.mat', 'k_opt'); %reload the optimal parameters found
-    pe_opt = pe_ref; % define pe_opt based on pe_ref and k_opt
-    pe([9 10]) = k_opt;
+% if Q10
+%     load('k_opt.mat', 'k_opt'); %reload the optimal parameters found
+%     pe_opt = pe_ref; % define pe_opt based on pe_ref and k_opt
+%     pe([9 10]) = k_opt;
+% 
+%     pe_opt(8) = 0; % set m=0 in pe_opt  -- line A (for future use)
+%     [t x]= ode15s(@you_ode,tspan, x0, [], pe_opt); %do the num sim for the you model
+%     max(1)= x(end,1); %stores the cell density at steady state in max(1)
+%     pe_opt(8) = 0; % set m=3 in pe_opt
+%     [t x]= ode15s(@you_ode,tspan, x0, [], pe_opt); %do the num sim for the you model
+%     min(1)= x(end,1); %stores the cell density at steady state in min(1) -- line B (for future use)
 
-    pe_opt(8) = 0; % set m=0 in pe_opt  -- line A (for future use)
-    [t x]= ode15s(@you_ode,tspan, x0, [], pe_opt); %do the num sim for the you model
-    max(1)= x(end,1); %stores the cell density at steady state in max(1)
-    pe_opt(8) = 3; % set m=3 in pe_opt
-    [t x]= ode15s(@you_ode,tspan, x0, [], pe_opt); %do the num sim for the you model
-    min(1)= x(end,1); %stores the cell density at steady state in min(1) -- line B (for future use)
-
-    pe_opt(8) = 0; % set m=3 in pe_opt
-    [t x]= ode15s(@you_odeR,tspan, x0, [], pe_opt); %do the num sim for the youR model
-    max(2)= x(end,1); %stores the cell density at steady state in max(2)
-    pe_opt(8) = 0; % set m=3 in pe_opt
-    [t x]= ode15s(@you_odeR,tspan, x0, [], pe_opt); %do the num sim for the youR model
-    min(2)= x(end,1); %stores the cell density at steady state in min(2) -- line B (for future use)
-
-    pe_opt(8) = 0; % set m=3 in pe_opt
-    [t x]= ode15s(@you_odeI,tspan, x0, [], pe_opt); %do the num sim for the youI model
-    max(3)= x(end,1); %stores the cell density at steady state in max(3)
-    pe_opt(8) = 0; % set m=3 in pe_opt
-    [t x]= ode15s(@you_odeI,tspan, x0, [], pe_opt); %do the num sim for the youI model
-    min(3)= x(end,1); %stores the cell density at steady state in min(3) -- line B (for future use)
-
-    pe_opt(8) = 0; % set m=3 in pe_opt
-    [t x]= ode15s(@you_odeRI,tspan, x0, [], pe_opt); %do the num sim for the youRI model
-    max(4)= x(end,1); %stores the cell density at steady state in max(4)
-    pe_opt(8) = 0; % set m=3 in pe_opt
-    [t x]= ode15s(@you_odeRI,tspan, x0, [], pe_opt); %do the num sim for the youRI model
-    min(4)= x(end,1); %stores the cell density at steady state in min(4) -- line B (for future use)
-
-    figure(9)
-    plot(1:4, max./min,'o');
-
+%     [t x]= ode15s(@you_odeR,tspan, x0, [], pe_opt); %do the num sim for the youR model
+%     max(2)= x(end,1); %stores the cell density at steady state in max(1)
+%     pe_opt(8) = 0; % set m=3 in pe_opt
+%     [t x]= ode15s(@you_odeR,tspan, x0, [], pe_opt); %do the num sim for the youR model
+%     min(2)= x(end,1); %stores the cell density at steady state in min(1) -- line B (for future use)
+%     .. %redo from line A to line B with the youR model, storing info in max(2) and min(2)
+%     .. %redo from line A to line B with the youI model, storing info in max(3) and min(3)
+%     .. %redo from line A to line B with the youRI model, storing info in max(4) and min(4)
+%     figure(9)
+%     plot(1:4, max./min,'o');
+% 
 %     .. % compute timed behavior of best model in absence of inducer (behavior stored in x1) or in presence of inducer (behavior stored in x2) 
 %     ..
 %     ..
@@ -273,5 +260,5 @@ if Q10
 %     figure(10)
 %     semilogy(t,x1(:,1)/p_ref(2),'b'); legend('N/Nm'); hold on
 %     semilogy(t,x2(:,1)/p_ref(2),'k'); legend('N/Nm'); hold on
-end
-   
+% end
+%    
