@@ -17,7 +17,7 @@ x0= [100 0 0];
 tspan= [0:1:60];
 
 %In order to avoid doing always the same computations, you can set several Q to 0...
-Q1=0; Q2=0; Q3=0; Q4=0; Q5=0; Q6_7=0; Q8=0; Q9=1; Q10=0;
+Q1=0; Q2=0; Q3=0; Q4=0; Q5=0; Q6_7=0; Q8=0; Q9=0; Q10=1;
 
 % Computes ON and OFF behaviors of engineered system; plot on same figure
 % %
@@ -25,10 +25,10 @@ if Q1
     display('--------------Question 1--------------');
     %set parameters p for the ON system and do numerical simulation
     p= p_ref;
-    [t x_on]= ode15s(@you_ode,tspan, x0, [], p);
+    [t, x_on]= ode15s(@you_ode,tspan, x0, [], p);
     %set parameters p for the OFF system and do numerical simulation
-    p([4 6]) = [0 0]; %define p
-    [t x_off]= ode15s(@you_ode,tspan, x0, [], p);
+    p([4]) = [0]; %define p
+    [t, x_off]= ode15s(@you_ode,tspan, x0, [], p);
     figure(1)
     subplot(2,1,1); plot(t,x_on(:,1)/p_ref(2)); legend('N/Nm'); hold on 
     subplot(2,1,2); plot(t,x_on(:,2:3)); legend('E','A'); hold on
@@ -40,20 +40,20 @@ end
 % % Compute cell density of engineered system at pH6.2 and pH7.8 and the corresponding fold change
 % % %
 
-p_pH62= [0.885 1.25e09 4e-03 5 2 4e-07 0.274];% stores values of k, Nm and da at pH 6.2   
-p_pH78= [0.936 1.20e09 4e-03 5 2 4e-07 1.19];% same at pH 7.8   
+p_pH62= [0.885 1.25e09 4e-03 5 2 4.8e-07 0.274];% stores values of k, Nm and da at pH 6.2   
+p_pH78= [0.936 1.20e09 4e-03 5 2 4.8e-07 1.19];% same at pH 7.8   
 if Q2
     display('--------------Question 2--------------');
     %compute cell density at steady state for pH6.2; stored in Nmin
     p = p_pH62; %define p
-    [t x]= ode15s(@you_ode,tspan, x0, [], p);
-    Nmin= x(end,1) %define Nmin using x
+    [t, x]= ode15s(@you_ode,tspan, x0, [], p);
+    Nmin = x(end,1); %define Nmin using x
     %compute cell density at steady state for pH7.8; stored in Nmax
     p = p_pH78; %define p
-    [t x]= ode15s(@you_ode,tspan, x0, [], p);
-    Nmax= x(end,1) %define Nmax using x
+    [t, x]= ode15s(@you_ode,tspan, x0, [], p);
+    Nmax= x(end,1); %define Nmax using x
     %define and display the fold change associated to pH variations
-    fold_change_pH= Nmax/Nmin % define fold_change_pH as a function of Nmin and Nmax;
+    fold_change_pH = Nmax/Nmin; % define fold_change_pH as a function of Nmin and Nmax;
     display(['fold change; ' num2str(fold_change_pH)]); % just for nice display; "num to string" converts numbers to strings of characters
 end
 
@@ -217,6 +217,9 @@ if Q9
     opts=cmaes;
     opts.DispModulo= 20; %displays info every 20 iterations (default is 100)
     opts.StopFitness= 1e-2; %displays info every 20 iterations (default is 100)
+    
+    %opts.LBounds = [0.4;1.8]; opts.UBounds = [1.6;2.4];
+    
     [k_opt, cost_min, counteval, stopflag, out, bestever]= cmaes('compute_cost', k, k_sigma,opts,m, tspan, x0, pe_ref, data);
     
     pe = pe_ref; %here define pe such that pe stores the parameters you found
@@ -246,33 +249,36 @@ if Q10
     pe_opt(8) = 0; % set m=3 in pe_opt
     [t x]= ode15s(@you_odeR,tspan, x0, [], pe_opt); %do the num sim for the youR model
     max(2)= x(end,1); %stores the cell density at steady state in max(2)
-    pe_opt(8) = 0; % set m=3 in pe_opt
+    pe_opt(8) = 3; % set m=3 in pe_opt
     [t x]= ode15s(@you_odeR,tspan, x0, [], pe_opt); %do the num sim for the youR model
     min(2)= x(end,1); %stores the cell density at steady state in min(2) -- line B (for future use)
 
     pe_opt(8) = 0; % set m=3 in pe_opt
     [t x]= ode15s(@you_odeI,tspan, x0, [], pe_opt); %do the num sim for the youI model
     max(3)= x(end,1); %stores the cell density at steady state in max(3)
-    pe_opt(8) = 0; % set m=3 in pe_opt
+    pe_opt(8) = 3; % set m=3 in pe_opt
     [t x]= ode15s(@you_odeI,tspan, x0, [], pe_opt); %do the num sim for the youI model
     min(3)= x(end,1); %stores the cell density at steady state in min(3) -- line B (for future use)
 
     pe_opt(8) = 0; % set m=3 in pe_opt
     [t x]= ode15s(@you_odeRI,tspan, x0, [], pe_opt); %do the num sim for the youRI model
     max(4)= x(end,1); %stores the cell density at steady state in max(4)
-    pe_opt(8) = 0; % set m=3 in pe_opt
+    pe_opt(8) = 3; % set m=3 in pe_opt
     [t x]= ode15s(@you_odeRI,tspan, x0, [], pe_opt); %do the num sim for the youRI model
     min(4)= x(end,1); %stores the cell density at steady state in min(4) -- line B (for future use)
 
     figure(9)
     plot(1:4, max./min,'o');
 
-%     .. % compute timed behavior of best model in absence of inducer (behavior stored in x1) or in presence of inducer (behavior stored in x2) 
-%     ..
-%     ..
-%     ..
-%     figure(10)
-%     semilogy(t,x1(:,1)/p_ref(2),'b'); legend('N/Nm'); hold on
-%     semilogy(t,x2(:,1)/p_ref(2),'k'); legend('N/Nm'); hold on
+    pe_opt(8) = 0; % compute timed behavior of best model in absence of inducer (behavior stored in x1) or in presence of inducer (behavior stored in x2) 
+    [t, x1]= ode15s(@you_odeRI,tspan, x0, [], pe_opt);
+    pe_opt(8) = 3;
+    [t, x2] = ode15s(@you_odeRI,tspan, x0, [], pe_opt);
+    figure(10)
+    semilogy(t,x1(:,1)/p_ref(2),'b'); legend('N/Nm'); hold on
+    semilogy(t,x2(:,1)/p_ref(2),'k'); legend('N/Nm'); hold on
+    
 end
+
+
    
