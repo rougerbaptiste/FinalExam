@@ -17,7 +17,7 @@ x0= [100 0 0];
 tspan= [0:1:60];
 
 %In order to avoid doing always the same computations, you can set several Q to 0...
-Q1=0; Q2=0; Q3=0; Q4=0; Q5=0; Q6_7=0; Q8=0; Q9=0; Q10=1;
+Q1=0; Q2=0; Q3=0; Q4=0; Q5=0; Q6_7=0; Q8=0; Q9=1; Q10=0;
 
 % Computes ON and OFF behaviors of engineered system; plot on same figure
 % %
@@ -222,8 +222,9 @@ if Q9
     pe = pe_ref; %here define pe such that pe stores the parameters you found
     pe([9 10]) = k_opt;
     for i=1:length(m)
-        p(8) = m(i); %here pe stores the ith inducer concentration
-        [t x]= ode15s(@you_odeRI,tspan, x0, [], pe);
+        pe(8) = m(i) %here pe stores the ith inducer concentration
+        [t, x]= ode15s(@you_odeRI,tspan, x0, [], pe);
+        x(:,3)
         A(i) = x(end,3); %store in A(i) or E(i) the steady state values for A or E that you computed
     end
     plot(m,A); % plot A or E (the plot goes in figure 8)

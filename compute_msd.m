@@ -25,5 +25,5 @@ for i=1:length(m)
         output(i)= x(end,3);
     end
 end
-msd= sqrt( (sum( (output - output_nom).^2))/length(m) ); %here is the square root of the sum of squared differences between the output and the nominal output, divided by the number of values
+msd= sqrt( (sum( (output - output_nom).^2)))/length(m); %here is the square root of the sum of squared differences between the output and the nominal output, divided by the number of values
 end

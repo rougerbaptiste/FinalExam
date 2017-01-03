@@ -8,4 +8,4 @@ for i=1:length(m)
     [t x]= ode15s(@you_odeRI,tspan, x0, [], pe);
     sim(i,1)= x(end,3); %store the value at steady state of a chosen variable (either N, E, or A) 
 end
-cost= sqrt(sum(( sim - data ).^2)/length(m)); %here you need to define the cost
+cost= sqrt(sum(( sim - data ).^2))/length(m); %here you need to define the cost
